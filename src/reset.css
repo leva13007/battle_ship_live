@@ -65,4 +65,5 @@ button {
 	border: none;
 	outline: none;
 	background-color: unset;
+	padding: 0;
 }
