@@ -1,5 +1,5 @@
-const TABLE_SIZE = 10;
-const table = Array(TABLE_SIZE).fill(null).map(() => Array(TABLE_SIZE).fill(null).map(() => '.'));
+export const TABLE_SIZE = 10;
+const table: string[][] = Array(TABLE_SIZE).fill(null).map(() => Array(TABLE_SIZE).fill(null).map(() => '.'));
 const FLEET_LAYOUT = [
   {size: 4, count: 1},
   {size: 3, count: 2},
@@ -31,8 +31,8 @@ const getRandomDirections = () => {
   return copyDirections;
 }
 
-const setFleetToBoard = (b) => {
-  const board = b.map(r => r.map(c => c));
+export const setFleetToBoard = (): string[][] => {
+  const board = table.map(r => r.map(c => c));
   for(const ship of FLEET_LAYOUT){
     for(let i=0;i<ship.count;i++){
       let place = false;
@@ -77,7 +77,7 @@ const setFleetToBoard = (b) => {
   return board;
 }
 
-const res = setFleetToBoard(table);
+// const res = setFleetToBoard(table);
 // console.log("\n")
 // console.log(res.map(r => r.join(' ')).join("\n"))
 //yarn create vite . -- --template react-ts 
