@@ -1,4 +1,4 @@
-import { type Board } from "../types";
+import { CellStateEnum, type Board, type Cell } from "../types";
 
 export const TABLE_SIZE = 10;
 const table: Board = Array(TABLE_SIZE)
@@ -6,7 +6,9 @@ const table: Board = Array(TABLE_SIZE)
   .map(() =>
     Array(TABLE_SIZE)
       .fill(null)
-      .map(() => ".")
+      .map(() => ({
+        state: CellStateEnum.EMPTY
+      }))
   );
 const FLEET_LAYOUT = [
   { size: 4, count: 1 },
@@ -49,21 +51,21 @@ const getRandomDirections = () => {
 };
 
 export const setFleetToBoard = (): Board => {
-  const board = table.map((r) => r.map((c) => c));
+  const board = table.map((r) => r.map((c) => ({...c} as Cell)));
   for (const ship of FLEET_LAYOUT) {
     for (let i = 0; i < ship.count; i++) {
-      let place = false;
+      let placed = false;
 
-      while (!place) {
+      while (!placed) {
         const row = getRandomCoordinate();
         const col = getRandomCoordinate();
         const directions = getRandomDirections();
         // console.log("directions",directions)
         for (const { r: dr, c: dc } of directions) {
-          place = true;
+          let canPlace = true;
           for (let s = 0; s < ship.size; s++) {
-            if (board[row + s * dr]?.[col + s * dc] !== ".") {
-              place = false;
+            if (board[row + s * dr]?.[col + s * dc]?.state !== CellStateEnum.EMPTY) {
+              canPlace = false;
               break;
             }
             for (const [mr, mc] of matrix) {
@@ -72,18 +74,19 @@ export const setFleetToBoard = (): Board => {
 
               if (nr < 0 || nr === TABLE_SIZE || nc < 0 || nc === TABLE_SIZE)
                 continue;
-              if (board[nr]?.[nc] !== ".") {
-                place = false;
+              if (board[nr][nc].state !== CellStateEnum.EMPTY) {
+                canPlace = false;
                 break;
               }
             }
           }
           // console.log("ship: ", ship.size, place, row, col)
-          if (place) {
+          if (canPlace) {
             for (let s = 0; s < ship.size; s++) {
-              board[row + s * dr][col + s * dc] = "S";
+              board[row + s * dr][col + s * dc].state = CellStateEnum.SHIP;
               // console.log(row + s * dr, col + s * dc)
             }
+            placed = true;
           }
           break;
         }
