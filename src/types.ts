@@ -1,8 +1,10 @@
-type CellState = "empty" | "ship"
+type CellState = "empty" | "ship" | "hit" | "miss"
 
 export enum CellStateEnum {
   EMPTY = "empty",
-  SHIP = "ship"
+  SHIP = "ship",
+  HIT = "hit",
+  MISS = "miss"
 }
 
 // type Cell = string

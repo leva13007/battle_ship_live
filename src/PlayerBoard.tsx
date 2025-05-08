@@ -7,7 +7,11 @@ type Props = {
   onShotHandler: (r: number, c: number) => void;
 };
 
-export const PlayerBoard: React.FC<Props> = ({ board, title, onShotHandler }) => (
+export const PlayerBoard: React.FC<Props> = ({
+  board,
+  title,
+  onShotHandler,
+}) => (
   <section className="board-player">
     <h2 className="board-title">{title}</h2>
     <div className="board-grid">
@@ -21,11 +25,24 @@ export const PlayerBoard: React.FC<Props> = ({ board, title, onShotHandler }) =>
       {board.map((r, i) => (
         <div className="board-row right-border" key={i}>
           <div className="board-cell-scale">{String.fromCharCode(65 + i)}</div>
-          {r.map((c, j) => (
-            <button key={`${i}-${j}`} className="board-cell" onClick={() => onShotHandler(i, j)}>
-              {c.state === CellStateEnum.SHIP && <div className="ship"></div>}
-            </button>
-          ))}
+          {r.map((c, j) => {
+            const className = `board-cell ${c.state}`
+            return (
+              <button
+                key={`${i}-${j}`}
+                className={className}
+                onClick={() => onShotHandler(i, j)}
+              >
+                {c.state === CellStateEnum.SHIP && <div className="ship"></div>}
+                {c.state === CellStateEnum.MISS && (
+                  <i className="fa-solid fa-xmark"></i>
+                )}
+                {c.state === CellStateEnum.HIT && (
+                  <i className="fa-solid fa-xmark"></i>
+                )}
+              </button>
+            );
+          })}
         </div>
       ))}
     </div>
