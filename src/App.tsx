@@ -1,37 +1,37 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {PlayerBoard} from './PlayerBoard';
 import './App.css'
-import { setFleetToBoard } from './service';
-import { CellStateEnum, type Cell } from './types';
+import { fireAt, setFleetToBoard } from './service';
+import { JapanFleet, UsaFleet } from './service/fleets';
 
 function App() {
-  const [leftFleet, setLeftFleet] =useState(setFleetToBoard());
-  const [rightFleet, setRightFleet] =useState(setFleetToBoard());
+  const playerOne = setFleetToBoard(JapanFleet);
+  const playerTwo = setFleetToBoard(UsaFleet);
+
+  const leftFleetRef = useRef(playerOne.fleet);
+  const rightFleetRef = useRef(playerTwo.fleet);
+
+  const [leftGameBoard, setLeftGameBoard] =useState(playerOne.board);
+  const [rightGameBoard, setRightGameBoard] =useState(playerTwo.board);
 
   const shotPlayerOneHandler = (r: number, c: number) => {
-    setRightFleet(prevState => {
-      const board = prevState.map((row) => row.map((col) => ({...col} as Cell)));
-      return board.map((row, i) => row.map((col, j) => {
-        return r === i && c === j ? board[i][j].state === CellStateEnum.SHIP ? {state: CellStateEnum.HIT} : {state: CellStateEnum.MISS} : {...col}
-      }));
-    })
+    const res = fireAt(rightGameBoard, rightFleetRef.current, r, c);
+    setRightGameBoard(res.board);
+    rightFleetRef.current = res.fleet;
   }
   
   const shotPlayerTwoHandler = (r: number, c: number) => {
-    setLeftFleet(prevState => {
-      const board = prevState.map((row) => row.map((col) => ({...col} as Cell)));
-      return board.map((row, i) => row.map((col, j) => {
-        return r === i && c === j ? board[i][j].state === CellStateEnum.SHIP ? {state: CellStateEnum.HIT} : {state: CellStateEnum.MISS} : {...col}
-      }));
-    })
+    const res = fireAt(leftGameBoard, leftFleetRef.current, r, c);
+    setLeftGameBoard(res.board);
+    leftFleetRef.current = res.fleet;
   }
 
   return (
     <>
       <h1>Battle ship</h1>
       <div className="game-board">
-        <PlayerBoard board={leftFleet} title='Player #1' onShotHandler={shotPlayerTwoHandler} />
-        <PlayerBoard board={rightFleet} title='Player #2' onShotHandler={shotPlayerOneHandler} />
+        <PlayerBoard board={leftGameBoard} title='Player #1' onShotHandler={shotPlayerTwoHandler} />
+        <PlayerBoard board={rightGameBoard} title='Player #2' onShotHandler={shotPlayerOneHandler} />
       </div>
     </>
   )

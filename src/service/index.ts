@@ -1,4 +1,9 @@
-import { CellStateEnum, type Board, type Cell } from "../types";
+import {
+  CellStateEnum,
+  type Board,
+  type Cell,
+  type ShipDefinition,
+} from "../types";
 
 export const TABLE_SIZE = 10;
 const table: Board = Array(TABLE_SIZE)
@@ -7,15 +12,9 @@ const table: Board = Array(TABLE_SIZE)
     Array(TABLE_SIZE)
       .fill(null)
       .map(() => ({
-        state: CellStateEnum.EMPTY
+        state: CellStateEnum.EMPTY,
       }))
   );
-const FLEET_LAYOUT = [
-  { size: 4, count: 1 },
-  { size: 3, count: 2 },
-  { size: 2, count: 3 },
-  { size: 1, count: 4 },
-];
 
 const directions = [
   { r: -1, c: 0 },
@@ -50,50 +49,95 @@ const getRandomDirections = () => {
   return copyDirections;
 };
 
-export const setFleetToBoard = (): Board => {
-  const board = table.map((r) => r.map((c) => ({...c} as Cell)));
-  for (const ship of FLEET_LAYOUT) {
-    for (let i = 0; i < ship.count; i++) {
-      let placed = false;
+export const setFleetToBoard = (
+  fleet: ShipDefinition[]
+): { board: Board; fleet: ShipDefinition[] } => {
+  const copyFleet = fleet.map(
+    (ship) => ({ ...ship, coordinates: [] } as ShipDefinition)
+  );
+  const board = table.map((r) => r.map((c) => ({ ...c } as Cell)));
+  for (const ship of copyFleet) {
+    let placed = false;
 
-      while (!placed) {
-        const row = getRandomCoordinate();
-        const col = getRandomCoordinate();
-        const directions = getRandomDirections();
-        // console.log("directions",directions)
-        for (const { r: dr, c: dc } of directions) {
-          let canPlace = true;
-          for (let s = 0; s < ship.size; s++) {
-            if (board[row + s * dr]?.[col + s * dc]?.state !== CellStateEnum.EMPTY) {
+    while (!placed) {
+      const row = getRandomCoordinate();
+      const col = getRandomCoordinate();
+      const directions = getRandomDirections();
+
+      for (const { r: dr, c: dc } of directions) {
+        let canPlace = true;
+        for (let s = 0; s < ship.size; s++) {
+          if (
+            board[row + s * dr]?.[col + s * dc]?.state !== CellStateEnum.EMPTY
+          ) {
+            canPlace = false;
+            break;
+          }
+          for (const [mr, mc] of matrix) {
+            const nr = row + s * dr + mr;
+            const nc = col + s * dc + mc;
+
+            if (nr < 0 || nr === TABLE_SIZE || nc < 0 || nc === TABLE_SIZE)
+              continue;
+            if (board[nr][nc].state !== CellStateEnum.EMPTY) {
               canPlace = false;
               break;
             }
-            for (const [mr, mc] of matrix) {
-              const nr = row + s * dr + mr;
-              const nc = col + s * dc + mc;
-
-              if (nr < 0 || nr === TABLE_SIZE || nc < 0 || nc === TABLE_SIZE)
-                continue;
-              if (board[nr][nc].state !== CellStateEnum.EMPTY) {
-                canPlace = false;
-                break;
-              }
-            }
           }
-          // console.log("ship: ", ship.size, place, row, col)
-          if (canPlace) {
-            for (let s = 0; s < ship.size; s++) {
-              board[row + s * dr][col + s * dc].state = CellStateEnum.SHIP;
-              // console.log(row + s * dr, col + s * dc)
-            }
-            placed = true;
-          }
-          break;
         }
+
+        if (canPlace) {
+          for (let s = 0; s < ship.size; s++) {
+            board[row + s * dr][col + s * dc].state = CellStateEnum.SHIP;
+            ship.coordinates.push({ r: row + s * dr, c: col + s * dc });
+          }
+          placed = true;
+        }
+        break;
       }
     }
   }
-  return board;
+  return { board, fleet: copyFleet };
+};
+
+export const fireAt = (
+  board: Board,
+  fleet: ShipDefinition[],
+  row: number,
+  col: number
+) => {
+  const copyFleet = fleet.map(
+    (ship) =>
+      ({ ...ship, coordinates: [...ship.coordinates] } as ShipDefinition)
+  );
+  const copyBoard = board.map((r) => r.map((c) => ({ ...c } as Cell)));
+
+  let isHit = false;
+  copyFleet.forEach((ship) => {
+    ship.coordinates.map(({ r, c }) => {
+      if (r === row && c === col) {
+        isHit = true;
+        
+        ship.hits++;
+
+        if (ship.hits === ship.size) {
+          ship.isSunk = true;
+
+          ship.coordinates.map(({ r, c }) => {
+            copyBoard[r][c].state = CellStateEnum.SUNK;
+          });
+        } else {
+          copyBoard[row][col].state = CellStateEnum.HIT;
+        }
+      }
+    });
+  });
+
+  if (!isHit) {
+    copyBoard[row][col].state = CellStateEnum.MISS;
+  }
+
+  return { board: copyBoard, fleet: copyFleet };
 };
 
 // const res = setFleetToBoard(table);

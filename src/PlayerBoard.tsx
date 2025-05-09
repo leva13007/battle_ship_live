@@ -29,6 +29,7 @@ export const PlayerBoard: React.FC<Props> = ({
             const className = `board-cell ${c.state}`
             return (
               <button
+                disabled={c.state === CellStateEnum.SUNK || c.state === CellStateEnum.HIT || c.state === CellStateEnum.MISS}
                 key={`${i}-${j}`}
                 className={className}
                 onClick={() => onShotHandler(i, j)}
@@ -38,6 +39,9 @@ export const PlayerBoard: React.FC<Props> = ({
                   <i className="fa-solid fa-xmark"></i>
                 )}
                 {c.state === CellStateEnum.HIT && (
+                  <i className="fa-solid fa-xmark"></i>
+                )}
+                {c.state === CellStateEnum.SUNK && (
                   <i className="fa-solid fa-xmark"></i>
                 )}
               </button>
