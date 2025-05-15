@@ -78,3 +78,17 @@ h1{
     }
   }  
 }
+
+.board-control{
+  display: flex;
+  justify-content: center;
+  padding-top: 24px;
+
+  .btn-action{
+    padding: 8px 16px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+}

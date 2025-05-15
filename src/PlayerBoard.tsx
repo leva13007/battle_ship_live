@@ -6,6 +6,8 @@ type Props = {
   title: string;
   onShotHandler: (r: number, c: number) => void;
   isDisableForShot: boolean;
+  gameBoardFog: boolean;
+  setGameBoardFog: (status: boolean) => void;
 };
 
 export const PlayerBoard: React.FC<Props> = ({
@@ -13,6 +15,8 @@ export const PlayerBoard: React.FC<Props> = ({
   title,
   onShotHandler,
   isDisableForShot,
+  gameBoardFog,
+  setGameBoardFog,
 }) => (
   <section className="board-player">
     <h2 className="board-title">{title}</h2>
@@ -36,7 +40,7 @@ export const PlayerBoard: React.FC<Props> = ({
                 className={className}
                 onClick={() => onShotHandler(i, j)}
               >
-                {c.state === CellStateEnum.SHIP && <div className="ship"></div>}
+                {!gameBoardFog && c.state === CellStateEnum.SHIP && <div className="ship"></div>}
                 {c.state === CellStateEnum.MISS && (
                   <i className="fa-solid fa-xmark"></i>
                 )}
@@ -51,6 +55,21 @@ export const PlayerBoard: React.FC<Props> = ({
           })}
         </div>
       ))}
+    </div>
+    <div className="board-control">
+      <button className="btn-action" onClick={() => setGameBoardFog(!gameBoardFog)}>
+        {
+          gameBoardFog ? (
+            <>
+              <i className="fa-regular fa-eye"></i> <span className="action-text">Show the fleet</span>
+            </>
+          ) : (
+            <>
+              <i className="fa-regular fa-eye"></i> <span className="action-text">Hide the fleet</span>
+            </>
+          )
+        }
+      </button>
     </div>
   </section>
 );

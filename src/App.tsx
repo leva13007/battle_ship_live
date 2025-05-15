@@ -20,6 +20,9 @@ function App() {
   const [leftGameBoard, setLeftGameBoard] = useState(playerOne.board);
   const [rightGameBoard, setRightGameBoard] = useState(playerTwo.board);
 
+  const [leftGameBoardFog, setLeftGameBoardFog] = useState(true);
+  const [rightGameBoardFog, setRightGameBoardFog] = useState(true);
+
   const shotPlayerOneHandler = (r: number, c: number) => {
     const { isHit, board, fleet } = fireAt(
       rightGameBoard,
@@ -67,12 +70,16 @@ function App() {
           title="Player #1"
           onShotHandler={shotPlayerTwoHandler}
           isDisableForShot={currentTurn === "player1" || isGameOver.current}
+          gameBoardFog={leftGameBoardFog}
+          setGameBoardFog={setLeftGameBoardFog}
         />
         <PlayerBoard
           board={rightGameBoard}
           title="Player #2"
           onShotHandler={shotPlayerOneHandler}
           isDisableForShot={currentTurn === "player2" || isGameOver.current}
+          gameBoardFog={rightGameBoardFog}
+          setGameBoardFog={setRightGameBoardFog}
         />
       </div>
     </>
