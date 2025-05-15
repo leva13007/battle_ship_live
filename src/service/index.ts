@@ -8,10 +8,12 @@ import {
 export const TABLE_SIZE = 10;
 const table: Board = Array(TABLE_SIZE)
   .fill(null)
-  .map(() =>
+  .map((_, r) =>
     Array(TABLE_SIZE)
       .fill(null)
-      .map(() => ({
+      .map((_, c) => ({
+        r,
+        c, 
         state: CellStateEnum.EMPTY,
         nearSunk: false,
       }))
@@ -30,7 +32,7 @@ const matrix = [
   [1, -1],  [1, 0],  [1, 1],
 ];
 
-const getRandomCoordinate = () => Math.floor(Math.random() * TABLE_SIZE);
+export const getRandomCoordinate = () => Math.floor(Math.random() * TABLE_SIZE);
 
 const getRandomDirections = () => {
   const copyDirections = [...directions];

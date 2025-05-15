@@ -10,6 +10,8 @@ export enum CellStateEnum {
 
 // type Cell = string
 export type Cell = {
+  r: number;
+  c: number;
   state: CellState;
   nearSunk: boolean;
 }
@@ -23,3 +25,5 @@ export type ShipDefinition = {
   hits: number;
   isSunk: boolean;
 }
+
+export type PlayerType = "player1" | "player2" | "bot1" | "bot2"
