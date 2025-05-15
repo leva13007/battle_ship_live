@@ -11,6 +11,7 @@ export enum CellStateEnum {
 // type Cell = string
 export type Cell = {
   state: CellState;
+  nearSunk: boolean;
 }
 export type Board = Cell[][];
 

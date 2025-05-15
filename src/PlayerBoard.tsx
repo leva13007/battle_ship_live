@@ -28,7 +28,7 @@ export const PlayerBoard: React.FC<Props> = ({
         <div className="board-row right-border" key={i}>
           <div className="board-cell-scale">{String.fromCharCode(65 + i)}</div>
           {r.map((c, j) => {
-            const className = `board-cell ${c.state}`
+            const className = `board-cell ${c.state} ${c.nearSunk && 'nearSunk'}`
             return (
               <button
                 disabled={c.state === CellStateEnum.SUNK || c.state === CellStateEnum.HIT || c.state === CellStateEnum.MISS || isDisableForShot}

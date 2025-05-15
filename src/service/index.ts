@@ -13,6 +13,7 @@ const table: Board = Array(TABLE_SIZE)
       .fill(null)
       .map(() => ({
         state: CellStateEnum.EMPTY,
+        nearSunk: false,
       }))
   );
 
@@ -24,15 +25,9 @@ const directions = [
 ];
 
 const matrix = [
-  [-1, -1],
-  [-1, 0],
-  [-1, 1],
-  [0, -1],
-  [0, 0],
-  [0, 1],
-  [1, -1],
-  [1, 0],
-  [1, 1],
+  [-1, -1], [-1, 0], [-1, 1],
+  [0, -1],  [0, 0],  [0, 1],
+  [1, -1],  [1, 0],  [1, 1],
 ];
 
 const getRandomCoordinate = () => Math.floor(Math.random() * TABLE_SIZE);
@@ -117,7 +112,7 @@ export const fireAt = (
     ship.coordinates.map(({ r, c }) => {
       if (r === row && c === col) {
         isHit = true;
-        
+
         ship.hits++;
 
         if (ship.hits === ship.size) {
@@ -125,6 +120,22 @@ export const fireAt = (
 
           ship.coordinates.map(({ r, c }) => {
             copyBoard[r][c].state = CellStateEnum.SUNK;
+
+            matrix.forEach(([dr, dc]) => {
+              const nr = r + dr;
+              const nc = c + dc;
+
+              if (
+                nr >= 0 &&
+                nr < TABLE_SIZE &&
+                nc >= 0 &&
+                nc < TABLE_SIZE &&
+                copyBoard[nr][nc].state !== CellStateEnum.SUNK &&
+                copyBoard[nr][nc].state !== CellStateEnum.HIT
+              ) {
+                copyBoard[nr][nc].nearSunk = true;
+              }
+            });
           });
         } else {
           copyBoard[row][col].state = CellStateEnum.HIT;

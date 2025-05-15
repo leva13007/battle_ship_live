@@ -54,6 +54,10 @@ h1{
           cursor: crosshair;
         }
 
+        &.nearSunk{
+          background-color: #aaa;
+        }
+
         .ship{
           border: 4px solid #1f223c;
           width: 100%;
@@ -61,7 +65,7 @@ h1{
         }
 
         &.miss{
-          color: #9f9f9f;
+          color: #7a7a7a;
         }
         &.hit{
           color: #f00;
