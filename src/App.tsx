@@ -13,7 +13,7 @@ function App() {
   const [player1, setPlayer1] = useState<PlayerType | null>(null); // "player1" | "bot1"
   const [player2, setPlayer2] = useState<PlayerType | null>(null); // "player2" | "bot2"
 
-  const isGameStarted= useRef(false);
+  const isGameStarted = useRef(false);
   const isGameOver = useRef(false);
   const winner = useRef<PlayerType | null>(null);
 
@@ -27,7 +27,7 @@ function App() {
   const [rightGameBoardFog, setRightGameBoardFog] = useState(false);
 
   const shotPlayerOneHandler = (r: number, c: number) => {
-    if (!player1 || !player2) return
+    if (!player1 || !player2) return;
     const { isHit, board, fleet } = fireAt(
       rightGameBoard,
       rightFleetRef.current,
@@ -40,7 +40,7 @@ function App() {
   };
 
   const shotPlayerTwoHandler = (r: number, c: number) => {
-    if (!player1 || !player2) return
+    if (!player1 || !player2) return;
     const { isHit, board, fleet } = fireAt(
       leftGameBoard,
       leftFleetRef.current,
@@ -64,56 +64,72 @@ function App() {
   }
 
   const resetGame = () => {
-    if (!player1 || !player2) return
+    if (!player1 || !player2) return;
     isGameOver.current = false;
     winner.current = null;
     playerOne = setFleetToBoard(JapanFleet);
     playerTwo = setFleetToBoard(UsaFleet);
-    console.log("reset")
+    console.log("reset");
     if (winner.current === player1) {
-      setCurrentTurn(player2)
+      setCurrentTurn(player2);
     } else {
-      setCurrentTurn(player1)
+      setCurrentTurn(player1);
     }
     setLeftGameBoard(playerOne.board);
     setRightGameBoard(playerTwo.board);
     leftFleetRef.current = playerOne.fleet;
     rightFleetRef.current = playerTwo.fleet;
-  }
+  };
 
   useEffect(() => {
-    if(player1 && player2) {
+    if (player1 && player2) {
       setCurrentTurn(player1);
       isGameStarted.current = true;
-    }    
-  }, [player1, player2])
+    }
+  }, [player1, player2]);
 
   useEffect(() => {
-    if (currentTurn === 'bot1') {
-      const possibleCells = rightGameBoard.flat().filter(cell => cell.state === CellStateEnum.EMPTY || cell.state === CellStateEnum.SHIP);
-
-      const randomCell = possibleCells[Math.floor(Math.random() * possibleCells.length)];
-      shotPlayerOneHandler(randomCell.r,randomCell.c);    
-    } else if (currentTurn === 'bot2') {
-      const possibleCells = leftGameBoard.flat().filter(cell => cell.state === CellStateEnum.EMPTY || cell.state === CellStateEnum.SHIP);
-
-      const randomCell = possibleCells[Math.floor(Math.random() * possibleCells.length)];
-      shotPlayerTwoHandler(randomCell.r,randomCell.c);
+    if (isGameOver.current) return;
+    if (currentTurn === "bot1") {
+      const possibleCells = rightGameBoard
+        .flat()
+        .filter(
+          (cell) =>
+            cell.state === CellStateEnum.EMPTY ||
+            cell.state === CellStateEnum.SHIP
+        );
+      const randomCell =
+        possibleCells[Math.floor(Math.random() * possibleCells.length)];
+      shotPlayerOneHandler(randomCell.r, randomCell.c);
+    } else if (currentTurn === "bot2") {
+      const possibleCells = leftGameBoard
+        .flat()
+        .filter(
+          (cell) =>
+            cell.state === CellStateEnum.EMPTY ||
+            cell.state === CellStateEnum.SHIP
+        );
+      const randomCell =
+        possibleCells[Math.floor(Math.random() * possibleCells.length)];
+      shotPlayerTwoHandler(randomCell.r, randomCell.c);
     }
-  },[currentTurn, leftGameBoard, rightGameBoardFog])
+  }, [currentTurn, leftGameBoard, rightGameBoard]);
 
   return (
     <>
       <h1>Battle ship</h1>
       <div className="game-status">
         <h2>
-          {
-          isGameOver.current ? (
-            <><span>Winner is {winner.current}</span> <button className="btn-action" onClick={resetGame}>Reset</button></>
+          {isGameOver.current ? (
+            <>
+              <span>Winner is {winner.current}</span>{" "}
+              <button className="btn-action" onClick={resetGame}>
+                Reset
+              </button>
+            </>
           ) : (
             <>Current shot: {currentTurn}</>
-          )
-        }
+          )}
         </h2>
       </div>
       <div className="game-board">
@@ -121,10 +137,15 @@ function App() {
           board={leftGameBoard}
           title={player1}
           onShotHandler={shotPlayerTwoHandler}
-          isDisableForShot={currentTurn === null || player1 === null || currentTurn === player1 || isGameOver.current}
+          isDisableForShot={
+            currentTurn === null ||
+            player1 === null ||
+            currentTurn === player1 ||
+            isGameOver.current
+          }
           gameBoardFog={leftGameBoardFog}
           setGameBoardFog={setLeftGameBoardFog}
-          players={['player1', 'bot1']}
+          players={["player1", "bot1"]}
           setPlayer={setPlayer1}
           isGameStarted={isGameStarted.current}
         />
@@ -132,10 +153,15 @@ function App() {
           board={rightGameBoard}
           title={player2}
           onShotHandler={shotPlayerOneHandler}
-          isDisableForShot={currentTurn === null || player2 === null || currentTurn === player2 || isGameOver.current}
+          isDisableForShot={
+            currentTurn === null ||
+            player2 === null ||
+            currentTurn === player2 ||
+            isGameOver.current
+          }
           gameBoardFog={rightGameBoardFog}
           setGameBoardFog={setRightGameBoardFog}
-          players={['player2', 'bot2']}
+          players={["player2", "bot2"]}
           setPlayer={setPlayer2}
           isGameStarted={isGameStarted.current}
         />
