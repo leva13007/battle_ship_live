@@ -8,6 +8,8 @@ function App() {
   const playerOne = setFleetToBoard(JapanFleet);
   const playerTwo = setFleetToBoard(UsaFleet);
 
+  const [currentTurn, setCurrentTurn] = useState<'player1' | 'player2' | 'bot'>('player1')
+
   const leftFleetRef = useRef(playerOne.fleet);
   const rightFleetRef = useRef(playerTwo.fleet);
 
@@ -15,23 +17,25 @@ function App() {
   const [rightGameBoard, setRightGameBoard] =useState(playerTwo.board);
 
   const shotPlayerOneHandler = (r: number, c: number) => {
-    const res = fireAt(rightGameBoard, rightFleetRef.current, r, c);
-    setRightGameBoard(res.board);
-    rightFleetRef.current = res.fleet;
+    const {isHit, board, fleet} = fireAt(rightGameBoard, rightFleetRef.current, r, c);
+    setRightGameBoard(board);
+    rightFleetRef.current = fleet;
+    if (!isHit) setCurrentTurn( 'player2');
   }
   
   const shotPlayerTwoHandler = (r: number, c: number) => {
-    const res = fireAt(leftGameBoard, leftFleetRef.current, r, c);
-    setLeftGameBoard(res.board);
-    leftFleetRef.current = res.fleet;
+    const {isHit, board, fleet} = fireAt(leftGameBoard, leftFleetRef.current, r, c);
+    setLeftGameBoard(board);
+    leftFleetRef.current = fleet;
+    if (!isHit) setCurrentTurn( 'player1');
   }
 
   return (
     <>
       <h1>Battle ship</h1>
       <div className="game-board">
-        <PlayerBoard board={leftGameBoard} title='Player #1' onShotHandler={shotPlayerTwoHandler} />
-        <PlayerBoard board={rightGameBoard} title='Player #2' onShotHandler={shotPlayerOneHandler} />
+        <PlayerBoard board={leftGameBoard} title='Player #1' onShotHandler={shotPlayerTwoHandler} isDisableForShot={currentTurn === 'player1'} />
+        <PlayerBoard board={rightGameBoard} title='Player #2' onShotHandler={shotPlayerOneHandler}  isDisableForShot={currentTurn === 'player2'} />
       </div>
     </>
   )

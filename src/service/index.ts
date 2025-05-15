@@ -137,7 +137,7 @@ export const fireAt = (
     copyBoard[row][col].state = CellStateEnum.MISS;
   }
 
-  return { board: copyBoard, fleet: copyFleet };
+  return { board: copyBoard, fleet: copyFleet, isHit };
 };
 
 // const res = setFleetToBoard(table);

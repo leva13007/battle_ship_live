@@ -5,12 +5,14 @@ type Props = {
   board: Board;
   title: string;
   onShotHandler: (r: number, c: number) => void;
+  isDisableForShot: boolean;
 };
 
 export const PlayerBoard: React.FC<Props> = ({
   board,
   title,
   onShotHandler,
+  isDisableForShot,
 }) => (
   <section className="board-player">
     <h2 className="board-title">{title}</h2>
@@ -29,7 +31,7 @@ export const PlayerBoard: React.FC<Props> = ({
             const className = `board-cell ${c.state}`
             return (
               <button
-                disabled={c.state === CellStateEnum.SUNK || c.state === CellStateEnum.HIT || c.state === CellStateEnum.MISS}
+                disabled={c.state === CellStateEnum.SUNK || c.state === CellStateEnum.HIT || c.state === CellStateEnum.MISS || isDisableForShot}
                 key={`${i}-${j}`}
                 className={className}
                 onClick={() => onShotHandler(i, j)}
