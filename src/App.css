@@ -4,6 +4,14 @@ h1{
   text-align: center;
   margin: 2rem auto;
 }
+.game-status{
+  height: 60px;
+  h2{
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+  }
+}
 .game-board{
   display: grid;
   grid-template-columns: repeat(2, 1fr);
