@@ -5,8 +5,8 @@ import { fireAt, setFleetToBoard } from "./service";
 import { JapanFleet, UsaFleet } from "./service/fleets";
 
 function App() {
-  const playerOne = setFleetToBoard(JapanFleet);
-  const playerTwo = setFleetToBoard(UsaFleet);
+  let playerOne = setFleetToBoard(JapanFleet);
+  let playerTwo = setFleetToBoard(UsaFleet);
 
   const [currentTurn, setCurrentTurn] = useState<"player1" | "player2" | "bot">(
     "player1"
@@ -58,11 +58,36 @@ function App() {
     winner.current = "player1";
   }
 
+  const resetGame = () => {
+    isGameOver.current = false;
+    winner.current = null;
+    playerOne = setFleetToBoard(JapanFleet);
+    playerTwo = setFleetToBoard(UsaFleet);
+    console.log("reset")
+    if (winner.current === 'player1') {
+      setCurrentTurn('player2')
+    } else {
+      setCurrentTurn('player1')
+    }
+    setLeftGameBoard(playerOne.board);
+    setRightGameBoard(playerTwo.board);
+    leftFleetRef.current = playerOne.fleet;
+    rightFleetRef.current = playerTwo.fleet;
+  }
+
   return (
     <>
       <h1>Battle ship</h1>
       <div className="game-status">
-        {isGameOver.current && <h2>Winner is {winner.current}</h2>}
+        <h2>
+          {
+          isGameOver.current ? (
+            <><span>Winner is {winner.current}</span> <button className="btn-action" onClick={resetGame}>Reset</button></>
+          ) : (
+            <>Current shot: {currentTurn}</>
+          )
+        }
+        </h2>
       </div>
       <div className="game-board">
         <PlayerBoard
