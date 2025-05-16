@@ -19,7 +19,7 @@ const table: Board = Array(TABLE_SIZE)
       }))
   );
 
-const directions = [
+export const directions = [
   { r: -1, c: 0 },
   { r: 0, c: 1 },
   { r: 1, c: 0 },
@@ -110,6 +110,7 @@ export const fireAt = (
   const copyBoard = board.map((r) => r.map((c) => ({ ...c } as Cell)));
 
   let isHit = false;
+  let isSunk = false;
   copyFleet.forEach((ship) => {
     ship.coordinates.map(({ r, c }) => {
       if (r === row && c === col) {
@@ -119,6 +120,7 @@ export const fireAt = (
 
         if (ship.hits === ship.size) {
           ship.isSunk = true;
+          isSunk = true;
 
           ship.coordinates.map(({ r, c }) => {
             copyBoard[r][c].state = CellStateEnum.SUNK;
@@ -150,8 +152,12 @@ export const fireAt = (
     copyBoard[row][col].state = CellStateEnum.MISS;
   }
 
-  return { board: copyBoard, fleet: copyFleet, isHit };
-};
+  return { board: copyBoard, fleet: copyFleet, isHit, isSunk };
+}
+
+export const setTargetHitDirection = () => {
+  
+}
 
 // const res = setFleetToBoard(table);
 // console.log("\n")
