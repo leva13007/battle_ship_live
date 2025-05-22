@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { PlayerBoard } from "./PlayerBoard";
 import "./App.css";
 import { fireAt, getCoordinatesForShot, setFleetToBoard } from "./service";
-import { JapanFleet, nationFleet, UsaFleet } from "./service/fleets";
+import { nationFleet } from "./service/fleets";
 import { type Board, type Nation, type PlayerType, type ShipDefinition } from "./types";
 // import { mockBoard, mockFleet } from "./service/mock";
 import { Bot } from "./service/Bot";
