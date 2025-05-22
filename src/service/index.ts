@@ -1,6 +1,7 @@
 import {
   CellStateEnum,
   type Board,
+  type BotContext,
   type Cell,
   type ShipDefinition,
 } from "../types";
@@ -13,7 +14,7 @@ const table: Board = Array(TABLE_SIZE)
       .fill(null)
       .map((_, c) => ({
         r,
-        c, 
+        c,
         state: CellStateEnum.EMPTY,
         nearSunk: false,
       }))
@@ -27,9 +28,15 @@ export const directions = [
 ];
 
 const matrix = [
-  [-1, -1], [-1, 0], [-1, 1],
-  [0, -1],  [0, 0],  [0, 1],
-  [1, -1],  [1, 0],  [1, 1],
+  [-1, -1],
+  [-1, 0],
+  [-1, 1],
+  [0, -1],
+  [0, 0],
+  [0, 1],
+  [1, -1],
+  [1, 0],
+  [1, 1],
 ];
 
 export const getRandomCoordinate = () => Math.floor(Math.random() * TABLE_SIZE);
@@ -153,11 +160,32 @@ export const fireAt = (
   }
 
   return { board: copyBoard, fleet: copyFleet, isHit, isSunk };
-}
+};
 
-export const setTargetHitDirection = () => {
-  
-}
+export const getCoordinatesForShot = ({
+  board,
+  context,
+}: {
+  board: Board;
+  context: BotContext;
+}) => {
+  switch (context.mode) {
+    case "target": {
+      return context.nextHitCoordinates as { r: number; c: number };
+    }
+    default: {
+      const possibleCells = board
+        .flat()
+        .filter(
+          (cell) =>
+            (cell.state === CellStateEnum.EMPTY ||
+              cell.state === CellStateEnum.SHIP) &&
+            (context.level === 1 ? !cell.nearSunk : true)
+        );
+      return possibleCells[Math.floor(Math.random() * possibleCells.length)];
+    }
+  }
+};
 
 // const res = setFleetToBoard(table);
 // console.log("\n")
