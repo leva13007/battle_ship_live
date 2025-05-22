@@ -3,9 +3,9 @@ import { PlayerBoard } from "./PlayerBoard";
 import "./App.css";
 import { fireAt, getCoordinatesForShot, setFleetToBoard } from "./service";
 import { JapanFleet, UsaFleet } from "./service/fleets";
-import { type Board, type BotContext, type PlayerType } from "./types";
+import { type Board, type PlayerType } from "./types";
 import { mockBoard, mockFleet } from "./service/mock";
-import { updateBotState } from "./service/updateBotState";
+import { Bot } from "./service/Bot";
 
 function App() {
   let playerOne = setFleetToBoard(JapanFleet);
@@ -30,21 +30,8 @@ function App() {
   const [leftGameBoardFog, setLeftGameBoardFog] = useState(false);
   const [rightGameBoardFog, setRightGameBoardFog] = useState(false);
 
-  const targetHitDirectionBot1Ref = useRef<BotContext>({
-    mode: "search",
-    level: 1,
-    originHitPoint: null,
-    nextHitCoordinates: null,
-    directions: [undefined, undefined, undefined, undefined], // boolean | undefined
-  });
-
-  const targetHitDirectionBot2Ref = useRef<BotContext>({
-    mode: "search",
-    level: 1,
-    originHitPoint: null,
-    nextHitCoordinates: null,
-    directions: [undefined, undefined, undefined, undefined],
-  });
+  const bot1 = useRef(new Bot("bot1"));
+  const bot2 = useRef(new Bot("bot2"));
 
   const shotPlayerOneHandler = (r: number, c: number) => {
     if (!player1 || !player2) return;
@@ -59,13 +46,12 @@ function App() {
 
     if (!isHit) setCurrentTurn(player2);
 
-    if (targetHitDirectionBot1Ref.current.level === 1 && player1 === "bot1") {
-      targetHitDirectionBot1Ref.current = updateBotState({
+    if (player1 === "bot1") {
+      bot1.current.updateAfterShot({
         isHit,
         isSunk,
         r,
         c,
-        botContext: targetHitDirectionBot1Ref.current,
         board: rightGameBoard,
       });
     }
@@ -83,13 +69,12 @@ function App() {
     leftFleetRef.current = fleet;
     if (!isHit) setCurrentTurn(player1);
 
-    if (targetHitDirectionBot2Ref.current.level === 1 && player2 === "bot2") {
-      targetHitDirectionBot2Ref.current = updateBotState({
+    if (player2 === "bot2") {
+      bot2.current.updateAfterShot({
         isHit,
         isSunk,
         r,
         c,
-        botContext: targetHitDirectionBot2Ref.current,
         board: leftGameBoard,
       });
     }
@@ -138,13 +123,13 @@ function App() {
     if (currentTurn === "bot1") {
       const randomCell = getCoordinatesForShot({
         board: rightGameBoard,
-        context: targetHitDirectionBot1Ref.current,
+        context: bot1.current.getContext(),
       });
       shotPlayerOneHandler(randomCell.r, randomCell.c);
     } else if (currentTurn === "bot2") {
       const randomCell = getCoordinatesForShot({
         board: leftGameBoard,
-        context: targetHitDirectionBot2Ref.current,
+        context: bot2.current.getContext(),
       });
       shotPlayerTwoHandler(randomCell.r, randomCell.c);
     }

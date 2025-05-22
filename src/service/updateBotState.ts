@@ -25,7 +25,6 @@ export const updateBotState = ({
       // NOT first hit and it's right direction, set the next hit coordination -> r: number, c: number + selected direction
       const indDir = context.directions.findIndex((dir) => dir);
       console.log("indDir", indDir, context.directions);
-      if (indDir === -1) debugger;
       const { r: dr, c: dc } = directions[indDir];
 
       // invalidate all perpendicular directions
