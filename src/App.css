@@ -2,7 +2,7 @@ h1{
   font-size: 3rem;
   font-weight: bold;
   text-align: center;
-  margin: 2rem auto;
+  margin: 0 auto 2rem;
 }
 .game-status{
   height: 60px;
@@ -17,9 +17,13 @@ h1{
 .game-board{
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  flex-grow: 1;
 
-  .board-player:not(:last-child){
-    border-right: 1px solid #000;
+  .board-player{
+    padding: 0 16px;
+    &:not(:last-child){
+      border-right: 1px solid #000;
+    }
   }
 
   .board-title{
@@ -90,12 +94,18 @@ h1{
   justify-content: center;
   gap: 16px;
   padding: 24px 0;
+  flex-direction: column;
 }
 
 .btn-action{
-    padding: 8px 16px;
-    border: 1px solid #000;
-    border-radius: 4px;
-    font-size: 1.5rem;
-    cursor: pointer;
+  padding: 8px 16px;
+  border: 1px solid #000;
+  border-radius: 4px;
+  font-size: 1.5rem;
+  cursor: pointer;
+
+  &.active{
+    background-color: #7a7a7a;
+    color: #fff;
   }
+}

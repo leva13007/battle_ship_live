@@ -1,3 +1,14 @@
 html, body, * {
   font-family: 'Roboto', sans-serif;
 }
+
+html, body {
+  height: 100vh;
+}
+
+#root{
+  height: 100%;
+  padding-top: 32px;
+  display: flex;
+  flex-direction: column;
+}

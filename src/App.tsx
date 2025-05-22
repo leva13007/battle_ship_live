@@ -3,29 +3,32 @@ import { PlayerBoard } from "./PlayerBoard";
 import "./App.css";
 import { fireAt, getCoordinatesForShot, setFleetToBoard } from "./service";
 import { JapanFleet, UsaFleet } from "./service/fleets";
-import { type Board, type PlayerType } from "./types";
-import { mockBoard, mockFleet } from "./service/mock";
+import { type Board, type PlayerType, type ShipDefinition } from "./types";
+// import { mockBoard, mockFleet } from "./service/mock";
 import { Bot } from "./service/Bot";
 
 function App() {
-  let playerOne = setFleetToBoard(JapanFleet);
-  let playerTwo = setFleetToBoard(UsaFleet);
-
   const [currentTurn, setCurrentTurn] = useState<PlayerType | null>(null);
   const [player1, setPlayer1] = useState<PlayerType | null>(null);
   const [player2, setPlayer2] = useState<PlayerType | null>(null);
 
-  const isGameStarted = useRef(false);
-  const isGameOver = useRef(false);
-  const winner = useRef<PlayerType | null>(null);
+  const gameConfig = useRef<{
+    isGameStarted: boolean;
+    isGameOver: boolean;
+    winner: PlayerType | null;
+  }>({
+    isGameStarted: false,
+    isGameOver: false,
+    winner: null,
+  });
 
-  const leftFleetRef = useRef(playerOne.fleet);
-  // const rightFleetRef = useRef(playerTwo.fleet);
-  const rightFleetRef = useRef(mockFleet);
+  const leftFleetRef = useRef<ShipDefinition[]>([]);
+  const rightFleetRef = useRef<ShipDefinition[]>([]);
+  // const rightFleetRef = useRef(mockFleet);
 
-  const [leftGameBoard, setLeftGameBoard] = useState(playerOne.board);
-  // const [rightGameBoard, setRightGameBoard] = useState(playerTwo.board);
-  const [rightGameBoard, setRightGameBoard] = useState(mockBoard as Board);
+  const [leftGameBoard, setLeftGameBoard] = useState<Board>([]);
+  const [rightGameBoard, setRightGameBoard] = useState<Board>([]);
+  // const [rightGameBoard, setRightGameBoard] = useState(mockBoard as Board);
 
   const [leftGameBoardFog, setLeftGameBoardFog] = useState(false);
   const [rightGameBoardFog, setRightGameBoardFog] = useState(false);
@@ -83,22 +86,22 @@ function App() {
   const winRightPlayer = leftFleetRef.current?.every((ship) => ship.isSunk);
   const winLeftPlayer = rightFleetRef.current?.every((ship) => ship.isSunk);
 
-  if (winRightPlayer) {
-    isGameOver.current = true;
-    winner.current = player2;
-  } else if (winLeftPlayer) {
-    isGameOver.current = true;
-    winner.current = player1;
+  if (leftFleetRef.current.length > 0 && winRightPlayer) {
+    gameConfig.current.isGameOver = true;
+    gameConfig.current.winner = player2;
+  } else if (rightFleetRef.current.length && winLeftPlayer) {
+    gameConfig.current.isGameOver = true;
+    gameConfig.current.winner = player1;
   }
 
   const resetGame = () => {
     if (!player1 || !player2) return;
-    isGameOver.current = false;
-    winner.current = null;
-    playerOne = setFleetToBoard(JapanFleet);
-    playerTwo = setFleetToBoard(UsaFleet);
+    gameConfig.current.isGameOver = false;
+    gameConfig.current.winner = null;
+    const playerOne = setFleetToBoard(JapanFleet);
+    const playerTwo = setFleetToBoard(UsaFleet);
     console.log("reset");
-    if (winner.current === player1) {
+    if (gameConfig.current.winner === player1) {
       setCurrentTurn(player2);
     } else {
       setCurrentTurn(player1);
@@ -109,17 +112,19 @@ function App() {
     rightFleetRef.current = playerTwo.fleet;
 
     // todo - tidy up after bots
+    bot1.current.reset();
+    bot2.current.reset();
   };
 
-  useEffect(() => {
-    if (player1 && player2) {
-      setCurrentTurn(player1);
-      isGameStarted.current = true;
-    }
-  }, [player1, player2]);
+  // useEffect(() => {
+  //   if (player1 && player2) {
+  //     setCurrentTurn(player1);
+  //     gameConfig.current.isGameStarted = true;
+  //   }
+  // }, [player1, player2]);
 
   useEffect(() => {
-    if (isGameOver.current) return;
+    if (gameConfig.current.isGameOver) return;
     if (currentTurn === "bot1") {
       const randomCell = getCoordinatesForShot({
         board: rightGameBoard,
@@ -135,55 +140,84 @@ function App() {
     }
   }, [currentTurn, leftGameBoard, rightGameBoard]);
 
+  const disabledStartTheGame = !player1 || !player2;
+
+  const startTheGame = () => {
+    const playerOne = setFleetToBoard(JapanFleet);
+    const playerTwo = setFleetToBoard(UsaFleet);
+
+    leftFleetRef.current = playerOne.fleet;
+    rightFleetRef.current = playerTwo.fleet;
+
+    setLeftGameBoard(playerOne.board);
+    setRightGameBoard(playerTwo.board);
+
+    gameConfig.current.isGameStarted = true;
+
+    // setRandom game starter
+    setCurrentTurn(player1);
+  };
+
   return (
     <>
       <h1>Battle ship</h1>
       <div className="game-status">
         <h2>
-          {isGameOver.current ? (
+          {!gameConfig.current.isGameStarted && (
+            <button
+              disabled={disabledStartTheGame}
+              className="btn-action"
+              onClick={startTheGame}
+            >
+              Start the Game!
+            </button>
+          )}
+          {gameConfig.current.isGameOver && (
             <>
-              <span>Winner is {winner.current}</span>{" "}
+              <span>Winner is {gameConfig.current.winner}</span>{" "}
               <button className="btn-action" onClick={resetGame}>
                 Reset
               </button>
             </>
-          ) : (
-            <>Current shot: {currentTurn}</>
           )}
+          {!gameConfig.current.isGameOver &&
+            gameConfig.current.isGameStarted && (
+              <>Current shot: {currentTurn}</>
+            )}
         </h2>
       </div>
       <div className="game-board">
         <PlayerBoard
           board={leftGameBoard}
-          title={player1}
+          player={player1}
           onShotHandler={shotPlayerTwoHandler}
           isDisableForShot={
-            currentTurn === null ||
-            player1 === null ||
-            currentTurn === player1 ||
-            isGameOver.current
+            gameConfig.current.isGameOver ||
+            !gameConfig.current.isGameStarted ||
+            currentTurn === player1
           }
           gameBoardFog={leftGameBoardFog}
           setGameBoardFog={setLeftGameBoardFog}
           players={["player1", "bot1"]}
           setPlayer={setPlayer1}
-          isGameStarted={isGameStarted.current}
+          isGameStarted={gameConfig.current.isGameStarted}
+          bot={bot1.current}
         />
         <PlayerBoard
           board={rightGameBoard}
-          title={player2}
+          player={player2}
           onShotHandler={shotPlayerOneHandler}
           isDisableForShot={
-            currentTurn === null ||
-            player2 === null ||
-            currentTurn === player2 ||
-            isGameOver.current
+            gameConfig.current.isGameOver ||
+            !gameConfig.current.isGameStarted ||
+            currentTurn === player2
           }
           gameBoardFog={rightGameBoardFog}
           setGameBoardFog={setRightGameBoardFog}
           players={["player2", "bot2"]}
           setPlayer={setPlayer2}
-          isGameStarted={isGameStarted.current}
+          isGameStarted={gameConfig.current.isGameStarted}
+          bot={bot2.current}
         />
       </div>
     </>

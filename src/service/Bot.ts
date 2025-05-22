@@ -9,7 +9,7 @@ export class Bot {
     this.id = id;
     this.context = {
       mode: "search",
-      level: 1,
+      level: 0,
       originHitPoint: null,
       nextHitCoordinates: null,
       directions: [undefined, undefined, undefined, undefined],
@@ -25,6 +25,14 @@ export class Bot {
   }) {
     if (this.context.level === 1)
       this.context = updateBotState({ ...params, botContext: this.context });
+  }
+
+  setLevel(level: 0 | 1) {
+    this.context.level = level;
+  }
+
+  getLevel() {
+    return this.context.level;
   }
 
   getNextShot(board: Board) {
