@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { PlayerBoard } from "./PlayerBoard";
 import "./App.css";
 import { fireAt, getCoordinatesForShot, setFleetToBoard } from "./service";
-import { JapanFleet, UsaFleet } from "./service/fleets";
-import { type Board, type PlayerType, type ShipDefinition } from "./types";
+import { JapanFleet, nationFleet, UsaFleet } from "./service/fleets";
+import { type Board, type Nation, type PlayerType, type ShipDefinition } from "./types";
 // import { mockBoard, mockFleet } from "./service/mock";
 import { Bot } from "./service/Bot";
 
@@ -11,6 +11,9 @@ function App() {
   const [currentTurn, setCurrentTurn] = useState<PlayerType | null>(null);
   const [player1, setPlayer1] = useState<PlayerType | null>(null);
   const [player2, setPlayer2] = useState<PlayerType | null>(null);
+
+  const [nation1, setNation1] = useState<Nation | null>(null);
+  const [nation2, setNation2] = useState<Nation | null>(null);
 
   const gameConfig = useRef<{
     isGameStarted: boolean;
@@ -24,11 +27,9 @@ function App() {
 
   const leftFleetRef = useRef<ShipDefinition[]>([]);
   const rightFleetRef = useRef<ShipDefinition[]>([]);
-  // const rightFleetRef = useRef(mockFleet);
 
   const [leftGameBoard, setLeftGameBoard] = useState<Board>([]);
   const [rightGameBoard, setRightGameBoard] = useState<Board>([]);
-  // const [rightGameBoard, setRightGameBoard] = useState(mockBoard as Board);
 
   const [leftGameBoardFog, setLeftGameBoardFog] = useState(false);
   const [rightGameBoardFog, setRightGameBoardFog] = useState(false);
@@ -98,8 +99,8 @@ function App() {
     if (!player1 || !player2) return;
     gameConfig.current.isGameOver = false;
     gameConfig.current.winner = null;
-    const playerOne = setFleetToBoard(JapanFleet);
-    const playerTwo = setFleetToBoard(UsaFleet);
+    const playerOne = setFleetToBoard(nationFleet[nation1!]);
+    const playerTwo = setFleetToBoard(nationFleet[nation2!]);
     console.log("reset");
     if (gameConfig.current.winner === player1) {
       setCurrentTurn(player2);
@@ -115,13 +116,6 @@ function App() {
     bot1.current.reset();
     bot2.current.reset();
   };
-
-  // useEffect(() => {
-  //   if (player1 && player2) {
-  //     setCurrentTurn(player1);
-  //     gameConfig.current.isGameStarted = true;
-  //   }
-  // }, [player1, player2]);
 
   useEffect(() => {
     if (gameConfig.current.isGameOver) return;
@@ -140,11 +134,11 @@ function App() {
     }
   }, [currentTurn, leftGameBoard, rightGameBoard]);
 
-  const disabledStartTheGame = !player1 || !player2;
+  const disabledStartTheGame = !player1 || !player2 || !nation1 || !nation2;
 
   const startTheGame = () => {
-    const playerOne = setFleetToBoard(JapanFleet);
-    const playerTwo = setFleetToBoard(UsaFleet);
+    const playerOne = setFleetToBoard(nationFleet[nation1!]);
+    const playerTwo = setFleetToBoard(nationFleet[nation2!]);
 
     leftFleetRef.current = playerOne.fleet;
     rightFleetRef.current = playerTwo.fleet;
@@ -160,7 +154,7 @@ function App() {
 
   return (
     <>
-      <h1>Battle ship</h1>
+      <h1>Battleship</h1>
       <div className="game-status">
         <h2>
           {!gameConfig.current.isGameStarted && (
@@ -202,6 +196,9 @@ function App() {
           setPlayer={setPlayer1}
           isGameStarted={gameConfig.current.isGameStarted}
           bot={bot1.current}
+          nation={nation1}
+          setNation={setNation1}
+          fleet={leftFleetRef.current}
         />
         <PlayerBoard
           board={rightGameBoard}
@@ -218,8 +215,14 @@ function App() {
           setPlayer={setPlayer2}
           isGameStarted={gameConfig.current.isGameStarted}
           bot={bot2.current}
+          nation={nation2}
+          setNation={setNation2}
+          fleet={rightFleetRef.current}
         />
       </div>
+      <footer>
+        <i className="fa-regular fa-copyright"></i> ZloyLeva 2025
+      </footer>
     </>
   );
 }

@@ -41,3 +41,5 @@ export type BotContext = {
   } | null;
   directions: [boolean | undefined, boolean | undefined, boolean | undefined, boolean | undefined];
 }
+
+export type Nation = 'ukraine' | 'japan' | 'usa' | 'uk' | 'france' | 'germany';

@@ -1,4 +1,10 @@
-import { CellStateEnum, type Board, type PlayerType } from "./types";
+import {
+  CellStateEnum,
+  type Board,
+  type Nation,
+  type PlayerType,
+  type ShipDefinition,
+} from "./types";
 import { TABLE_SIZE } from "./service";
 import type { Bot } from "./service/Bot";
 import { useState } from "react";
@@ -14,6 +20,9 @@ type Props = {
   setPlayer: (player: PlayerType) => void;
   isGameStarted: boolean;
   bot: Bot;
+  nation: Nation | null;
+  setNation: (nation: Nation) => void;
+  fleet: ShipDefinition[];
 };
 
 export const PlayerBoard: React.FC<Props> = ({
@@ -27,6 +36,9 @@ export const PlayerBoard: React.FC<Props> = ({
   setPlayer,
   isGameStarted,
   bot,
+  nation,
+  setNation,
+  fleet,
 }) => {
   const [activeButton, setActiveButton] = useState(0);
   return (
@@ -70,6 +82,56 @@ export const PlayerBoard: React.FC<Props> = ({
               <i className="fa-solid fa-robot"></i> Bot level #1
             </button>
           </div>
+          <ul className="board-control">
+            <li>
+              <button
+                className={`btn-action ${nation === "ukraine" ? "active" : ""}`}
+                onClick={() => setNation("ukraine")}
+              >
+                🇺🇦 Ukraine
+              </button>
+            </li>
+            <li>
+              <button
+                className={`btn-action ${nation === "japan" ? "active" : ""}`}
+                onClick={() => setNation("japan")}
+              >
+                🇯🇵 Japan
+              </button>
+            </li>
+            <li>
+              <button
+                className={`btn-action ${nation === "usa" ? "active" : ""}`}
+                onClick={() => setNation("usa")}
+              >
+                🇺🇸 USA
+              </button>
+            </li>
+            <li>
+              <button
+                className={`btn-action ${nation === "uk" ? "active" : ""}`}
+                onClick={() => setNation("uk")}
+              >
+                🇬🇧 UK
+              </button>
+            </li>
+            <li>
+              <button
+                className={`btn-action ${nation === "france" ? "active" : ""}`}
+                onClick={() => setNation("france")}
+              >
+                🇫🇷 France
+              </button>
+            </li>
+            <li>
+              <button
+                className={`btn-action ${nation === "germany" ? "active" : ""}`}
+                onClick={() => setNation("germany")}
+              >
+                🇩🇪 Germany
+              </button>
+            </li>
+          </ul>
         </>
       )}
       {isGameStarted && (
@@ -139,6 +201,24 @@ export const PlayerBoard: React.FC<Props> = ({
               )}
             </button>
           </div>
+          <ul className="fleet-list">
+            {fleet.map((ship) => (
+              <li className={`${ship.isSunk ? 'sunk' : ''}`}>
+                <span>
+                  {Array.from({ length: ship.size }).map((_, i) => (
+                    <>
+                      {ship.isSunk ? (
+                        <i key={i} className="fa-solid fa-square-xmark"></i>
+                      ) : (
+                        <i key={i} className="fa-solid fa-square"></i>
+                      )}
+                    </>
+                  ))}
+                </span>
+                <span className="ship-name">{ship.name}</span>
+              </li>
+            ))}
+          </ul>
         </>
       )}
     </section>

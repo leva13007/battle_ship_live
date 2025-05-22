@@ -1,4 +1,4 @@
-import type { ShipDefinition } from "../types";
+import type { Nation, ShipDefinition } from "../types";
 
 export const JapanFleet: ShipDefinition[] = [
   { id: 1, name: "JS Yamato", size: 4, coordinates: [], hits: 0, isSunk: false },            // символічно, хоч і не на службі
@@ -27,16 +27,16 @@ export const UsaFleet: ShipDefinition[] = [
 ];
 
 export const UkraineFleet: ShipDefinition[] = [
-  { id: 1, name: "Hetman Sahaidachnyi", size: 4, coordinates: [], hits: 0, isSunk: false }, // фрегат
-  { id: 2, name: "U402 Lutsk", size: 3, coordinates: [], hits: 0, isSunk: false }, // корвет
+  { id: 1, name: "F130 Hetman Sahaidachnyi", size: 4, coordinates: [], hits: 0, isSunk: false }, // фрегат
+  { id: 2, name: "U205 Lutsk", size: 3, coordinates: [], hits: 0, isSunk: false }, // корвет
   { id: 3, name: "U209 Ternopil", size: 3, coordinates: [], hits: 0, isSunk: false }, // корвет
   { id: 4, name: "U153 Pryluky", size: 2, coordinates: [], hits: 0, isSunk: false }, // ракетний катер
-  { id: 5, name: "U500 Donbas", size: 2, coordinates: [], hits: 0, isSunk: false }, // судно забезпечення
-  { id: 6, name: "U510 Korets", size: 2, coordinates: [], hits: 0, isSunk: false }, // буксир (реально дієвий)
+  { id: 5, name: "P192 Sumy", size: 2, coordinates: [], hits: 0, isSunk: false }, // судно забезпечення
+  { id: 6, name: "M310 Chernihiv", size: 2, coordinates: [], hits: 0, isSunk: false }, // буксир (реально дієвий)
   { id: 7, name: "U311 Cherkasy", size: 1, coordinates: [], hits: 0, isSunk: false }, // тральщик-легенда
-  { id: 8, name: "U176 Nikopol", size: 1, coordinates: [], hits: 0, isSunk: false }, // арт. катер
-  { id: 9, name: "U178 Berdyansk", size: 1, coordinates: [], hits: 0, isSunk: false }, // арт. катер
-  { id: 10, name: "U179 Vyshhorod", size: 1, coordinates: [], hits: 0, isSunk: false }, // ще один броньований
+  { id: 8, name: "P176 Nikopol", size: 1, coordinates: [], hits: 0, isSunk: false }, // арт. катер
+  { id: 9, name: "P175 Berdyansk", size: 1, coordinates: [], hits: 0, isSunk: false }, // арт. катер
+  { id: 10, name: "B435 Zaporizhzhya", size: 1, coordinates: [], hits: 0, isSunk: false }, // ще один броньований
 ];
 
 export const UKFleet: ShipDefinition[] = [
@@ -77,3 +77,12 @@ export const GermanyFleet: ShipDefinition[] = [
   { id: 9, name: "FGS Baltrum", size: 1, coordinates: [], hits: 0, isSunk: false },
   { id: 10, name: "FGS Helgoland", size: 1, coordinates: [], hits: 0, isSunk: false },
 ];
+
+export const nationFleet: Record<Nation, ShipDefinition[]> = {
+  'ukraine': UkraineFleet,
+  'japan': JapanFleet,
+  'usa': UsaFleet,
+  'uk': UKFleet,
+  'france': FranceFleet,
+  'germany': GermanyFleet,
+}
